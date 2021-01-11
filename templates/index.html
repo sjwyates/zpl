@@ -10,21 +10,108 @@
 </head>
 
 <body>
-    <div class="container is-max-desktop">
-        <form id="sampleForm" class="form">
-            <div class="field">
-              <label for="samplePoint" class="label">Sample Point</label>
-              <div class="control">
-                <input id="samplePoint" class="input" type="text" placeholder="eg, 'C7UP12402">
-              </div>
+    <div id="app">
+
+        <section>
+            <div class="container">
+                <button class="button" @click="addModal = true">Add Sample</button>
+                <button class="button" @click="uploadModal = true">Upload Excel File</button>
+                <button class="button" @click="printLabels">Print All Labels</button>
             </div>
-            <div class="field is-grouped">
-                {% for test in tests %}
-                <label for="{{ test }}" class="checkbox">
-                    <input type="checkbox" id="{{ test }}">{{ test }}</input>
-                </label>
-                {% endfor %}
+        </section>
+
+        <section>
+            <div class="container">
+                <table class="table is-bordered is-striped">
+                    <thead>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for sample in samples %}
+                            <tr>
+                                {% for column in columns %}
+                                    <td>{{ sample[column] }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </form>
+        </section>
     </div>
+
+    <script type="text/x-template" id="add-modal-template">
+        <transition name="modal">
+            <div>
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Add Sampling Point</p>
+                        <button class="delete" aria-label="close" @click="$emit('close')"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <form id="sampleForm" class="form">
+                            <div class="field">
+                              <label for="samplePoint" class="label">Sample Point</label>
+                              <div class="control">
+                                <input id="samplePoint" class="input" type="text" placeholder="eg, 'C7UP12402">
+                              </div>
+                            </div>
+                            <div class="field is-grouped">
+                                {% for test in tests %}
+                                <label for="{{ test }}" class="checkbox">
+                                    <input type="checkbox" id="{{ test }}">{{ test }}</input>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            <button class="button is-success" @click="addSamplePoint">Add</button>
+                            <button class="button" aria-label="close" @click="$emit('close')">Cancel</button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </transition>
+    </script>
+
+    <add-modal v-if="addModal" @close="addModal = false"/>
+
+    <script type="text/x-template" id="upload-modal-template">
+        <transition name="modal">
+            <div>
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Upload Excel File</p>
+                        <button class="delete" aria-label="close" @click="$emit('close')"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <form id="sampleForm" class="form">
+                            <div class="file">
+                                <label class="file-label">
+                                    <input class="file-input" type="file" name="resume">
+                                    <span class="file-cta">
+                                        <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                            Choose a file…
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <button class="button is-success" @click="uploadFile">Upload</button>
+                            <button class="button" aria-label="close" @click="$emit('close')">Cancel</button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </transition>
+    </script>
+
+    <upload-modal v-if="uploadModal" @close="uploadModal = false"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
